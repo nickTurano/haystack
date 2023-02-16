@@ -314,7 +314,23 @@ class Crawler(BaseComponent):
             self.driver.get(link)
             if loading_wait_time is not None:
                 time.sleep(loading_wait_time)
-            el = self.driver.find_element(by=By.TAG_NAME, value="body")
+            try:
+                el = self.driver.find_element(by=By.TAG_NAME, value="body")
+            except: 
+                self.driver.save_screenshot("ss.png")
+                try:
+                    username = self.driver.find_element(by=By.ID, value="username")
+                    password = self.driver.find_element(by=By.ID, value="password")
+                    username.send_keys("")
+                    password.send_keys("")
+                    self.driver.find_element(by=By.ID, value="signOnButton").click()
+                    logging.warning('Login successful')
+                    time.sleep(10)
+                    self.driver.save_screenshot("ss2.png")
+                    el = self.driver.find_element(by=By.TAG_NAME, value="body")
+                except: 
+                    logger.error('Unable to find login element')
+                    self.driver.save_screenshot("sserror.png")if extract_hidden_text:
             if extract_hidden_text:
                 text = el.get_attribute("textContent")
             else:
